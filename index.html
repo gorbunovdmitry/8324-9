@@ -305,7 +305,7 @@
   // ====== КОНФИГ ЭКСПЕРИМЕНТА ======
   // Строки ниже заменяет build.py — не убирайте маркеры BUILD:.
   var CONFIG = {"exp": 8324, "num": 9, "greeting": "Привет! Это ИИ-ассистент Альфа-Банка. Помогу разобраться с личными финансами. С чего начнём?", "chips": ["Совет по моим финансам", "С чего начать?", "Что умеет ИИ-ассистент?"]}; // BUILD:CONFIG
-  var WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbx8aemvuVqg-fw3xGi2H9_-hm_JfkNoK9KTPZ2U9FjhTKnkCYIi6uA6t0N4LZ_rcnM/exec"; // BUILD:WEBHOOK
+  var WEBHOOK_URL = "PASTE_APPS_SCRIPT_8324_URL"; // BUILD:WEBHOOK
 
 
   var VAR = CONFIG.num;
@@ -443,7 +443,7 @@
       fetch(WEBHOOK_URL, {
         method:'POST', mode:'no-cors',
         headers:{ 'Content-Type':'text/plain;charset=utf-8' },
-        body: JSON.stringify({ variant: EXP + '-' + VAR, role: role, text: text, via: how || '', cid: CID, sid: SID }),
+        body: JSON.stringify({ variant: VAR, role: role, text: text, via: how || '', cid: CID, sid: SID }),
         keepalive: true
       }).catch(function(){});
     }catch(e){}
