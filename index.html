@@ -305,7 +305,7 @@
   // ====== КОНФИГ ЭКСПЕРИМЕНТА ======
   // Строки ниже заменяет build.py — не убирайте маркеры BUILD:.
   var CONFIG = {"exp": 8324, "num": 9, "greeting": "Привет! Это ИИ-ассистент Альфа-Банка. Помогу разобраться с личными финансами. С чего начнём?", "chips": ["Совет по моим финансам", "С чего начать?", "Что умеет ИИ-ассистент?"]}; // BUILD:CONFIG
-  var WEBHOOK_URL = "PASTE_APPS_SCRIPT_8324_URL"; // BUILD:WEBHOOK
+  var WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbx8aemvuVqg-fw3xGi2H9_-hm_JfkNoK9KTPZ2U9FjhTKnkCYIi6uA6t0N4LZ_rcnM/exec"; // BUILD:WEBHOOK
 
 
   var VAR = CONFIG.num;
@@ -384,7 +384,7 @@
     if(!TEST_MODE){ try{ localStorage.setItem(FIRED_KEY, JSON.stringify(fired)); }catch(e){} }
     track(name);
   }
-  function ev(base){ return EXP + '_' + VAR + '_' + base; }
+  function ev(base){ return EXP + '_' + base + '_var' + VAR; }
 
   // ====== helpers ======
   var thread   = document.getElementById('thread');
@@ -443,7 +443,7 @@
       fetch(WEBHOOK_URL, {
         method:'POST', mode:'no-cors',
         headers:{ 'Content-Type':'text/plain;charset=utf-8' },
-        body: JSON.stringify({ exp: EXP, variant: VAR, role: role, text: text, via: how || '', cid: CID, sid: SID }),
+        body: JSON.stringify({ variant: EXP + '-' + VAR, role: role, text: text, via: how || '', cid: CID, sid: SID }),
         keepalive: true
       }).catch(function(){});
     }catch(e){}
@@ -580,9 +580,8 @@
     userTurns++;
     // Чипс или набранный текст: совпадение набранного с подписью чипса — всё равно ввод.
     var how = (via === 'typed') ? 'typed' : 'chip';
-    var chipNo = STARTER_CHIPS.indexOf(text) + 1;
-    once(ev('click_continue'));
-    once(ev(how === 'typed' ? 'click_send' : (chipNo > 0 ? 'click_chip' + chipNo : 'click_chip')));
+    once(ev('first_message'));
+    once(ev(how === 'typed' ? 'continue_typed' : 'continue_chip'));
 
     removeChips();
     addUserBubble(text);
@@ -646,9 +645,10 @@
   if(isLocked()){ showStubScreen(); return; }
 
   initAnalyticsIdentity();
-  once(ev('page_view'));
+  once(ev('page_view_landing'));
   if(RESTORED && RESTORED.msgs && RESTORED.msgs.length){
     restoreDialog(RESTORED);                 // возврат в течение недели — показываем прежний диалог
+    once(ev('session_resumed'));
   } else {
     playIntro();                             // новая сессия
   }
