@@ -359,7 +359,16 @@
   // зашит в имя события, а «один пользователь / одна сессия» GA4 считает сам).
   // Связка cid/sid живёт в Яндекс.Метрике (params не требуют регистрации) и в
   // Google-таблице, куда cid и sid пишутся с каждым сообщением.
+  var BOT = (function(){
+    try{
+      if(navigator.webdriver) return true;
+      var ua = navigator.userAgent || '';
+      return /headless|phantom|puppeteer|playwright|bot|crawler|spider|curl|wget|python|node-fetch/i.test(ua);
+    }catch(e){ return false; }
+  })();
+
   function track(name, extra){
+    if(BOT) return;
     try{ if(typeof window.gtag === 'function') window.gtag('event', name); }catch(e){}
     var p = { cid: CID, sid: SID, variant: VAR };
     if(extra) for(var k in extra) p[k] = extra[k];
@@ -436,6 +445,7 @@
 
   // ====== лог диалога в Google-таблицу (строка на каждое сообщение) ======
   function logRow(role, text, how){
+    if(BOT) return;
     try{
       if(!WEBHOOK_URL || WEBHOOK_URL.indexOf('PASTE_') === 0){
         console.log('[' + EXP + ']', 'var'+VAR, role+':', text.slice(0,80), how ? '(' + how + ')' : '');
